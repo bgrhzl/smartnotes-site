@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>SmartNotes — Connect</title>
+<link rel="stylesheet" href="../../style.css">
+<style>
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+  button { font: inherit; padding: 12px 20px; border-radius: 12px; border: 0; cursor: pointer; min-height: 44px; }
+  .primary { background: var(--accent); color: #fff; }
+  .secondary { background: var(--card); color: var(--fg); }
+  input { font: inherit; padding: 12px; border-radius: 12px; border: 1px solid var(--muted); width: 100%; background: var(--bg); color: var(--fg); }
+  .error { color: #d70015; }
+  ul.scopes li { margin: 6px 0; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body><main>
+<h1>SmartNotes</h1>
+<p id="status" class="muted"></p>
+
+<section id="signin" hidden>
+  <p id="signin-intro"></p>
+  <div class="actions" id="providers"></div>
+  <form id="email-form" hidden>
+    <p><input id="email" type="email" autocomplete="email" required></p>
+    <div class="actions"><button class="primary" type="submit" id="email-send"></button></div>
+  </form>
+  <form id="code-form" hidden>
+    <p><input id="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required></p>
+    <div class="actions"><button class="primary" type="submit" id="code-verify"></button></div>
+  </form>
+</section>
+
+<section id="consent" hidden>
+  <div class="card">
+    <p id="consent-title"></p>
+    <ul class="scopes" id="consent-list"></ul>
+    <p class="muted" id="consent-account"></p>
+  </div>
+  <div class="actions">
+    <button class="primary" id="approve"></button>
+    <button class="secondary" id="deny"></button>
+  </div>
+  <p class="muted"><a href="#" id="switch"></a></p>
+</section>
+
+<p id="error" class="error" role="alert"></p>
+<p class="muted"><a href="../../privacy/">Privacy Policy</a> · <a href="../../terms/">Terms of Use</a></p>
+</main>
+<script type="module">
+// SmartNotes OAuth izin sayfası: Claude / ChatGPT gibi bir uygulama SmartNotes MCP sunucusuna bağlanmak istediğinde
+// Supabase Auth kullanıcıyı buraya gönderir (?authorization_id=…). Kullanıcı giriş yapar, isteği görür, onaylar/reddeder.
+// Anahtar herkese açık "anon" anahtarıdır (config.js; scripts/publish_site.sh üretir). Gizli anahtar yoktur.
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.7/+esm";
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./config.js";
+
+const tr = (navigator.language || "en").toLowerCase().startsWith("tr");
+const t = tr ? {
+  loading: "Yükleniyor…", missing: "Bu sayfa bir bağlantı isteğiyle açılmalı (Claude veya ChatGPT'den).",
+  signin: "Devam etmek için SmartNotes hesabınla giriş yap (uygulamada kullandığın hesap).",
+  google: "Google ile devam et", email: "E-posta ile devam et", send: "Kod gönder", verify: "Giriş yap",
+  emailPlaceholder: "E-posta adresin", codePlaceholder: "6 haneli kod", codeSent: "E-postana 6 haneli bir kod gönderdik.",
+  noMethods: "Şu anda web girişi açık değil. SmartNotes destek sayfasından bize yaz.",
+  wants: (name) => `${name}, SmartNotes hesabına bağlanmak istiyor. İzin verirsen:`,
+  can1: "Uygulamada eşitlemeyi açtığın defterlerin adlarını ve sayfa metinlerini okuyabilir.",
+  can2: "Sayfalarına öneri bırakabilir (Pro). Öneriler sen SmartNotes'ta onaylamadan sayfaya eklenmez.",
+  cannot: "Kalem çizgilerine, görsellere, ses kayıtlarına erişemez; sayfa silemez veya değiştiremez.",
+  account: (e) => `Hesap: ${e}`, approve: "İzin ver", deny: "Reddet", other: "Başka bir hesapla giriş yap",
+  done: "Yönlendiriliyor…", failed: "İşlem tamamlanamadı. Tekrar dene.",
+} : {
+  loading: "Loading…", missing: "Open this page from a connection request (Claude or ChatGPT).",
+  signin: "Sign in with your SmartNotes account (the one you use in the app) to continue.",
+  google: "Continue with Google", email: "Continue with email", send: "Send code", verify: "Sign in",
+  emailPlaceholder: "Your email address", codePlaceholder: "6-digit code", codeSent: "We sent a 6-digit code to your email.",
+  noMethods: "Web sign-in is not available right now. Contact us through the SmartNotes support page.",
+  wants: (name) => `${name} wants to connect to your SmartNotes account. If you allow it, it can:`,
+  can1: "Read the titles and page text of the notebooks you chose to sync in the app.",
+  can2: "Leave suggestions on your pages (Pro). Suggestions are never added until you approve them in SmartNotes.",
+  cannot: "It cannot access your ink, images or recordings, and it cannot delete or change pages.",
+  account: (e) => `Account: ${e}`, approve: "Allow", deny: "Deny", other: "Sign in with another account",
+  done: "Redirecting…", failed: "Something went wrong. Try again.",
+};
+document.documentElement.lang = tr ? "tr" : "en";
+const $ = (id) => document.getElementById(id);
+const show = (id, on = true) => { $(id).hidden = !on; };
+const setError = (message) => { $("error").textContent = message || ""; };
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { flowType: "pkce", detectSessionInUrl: true, persistSession: true },
+});
+const authorizationId = new URLSearchParams(location.search).get("authorization_id");
+$("status").textContent = t.loading;
+
+async function enabledProviders() {
+  try {
+    const response = await fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: SUPABASE_ANON_KEY } });
+    const external = (await response.json()).external || {};
+    return { google: external.google === true, email: external.email === true };
+  } catch { return { google: false, email: false }; }
+}
+
+async function showSignIn() {
+  $("status").textContent = "";
+  $("signin-intro").textContent = t.signin;
+  const providers = await enabledProviders();
+  const box = $("providers");
+  box.replaceChildren();
+  if (providers.google) {
+    const button = Object.assign(document.createElement("button"), { className: "primary", textContent: t.google });
+    button.onclick = () => supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: location.href } });
+    box.append(button);
+  }
+  if (providers.email) {
+    const button = Object.assign(document.createElement("button"), { className: "secondary", textContent: t.email });
+    button.onclick = () => { show("email-form"); $("email").focus(); };
+    box.append(button);
+  }
+  if (!providers.google && !providers.email) setError(t.noMethods);
+  $("email").placeholder = t.emailPlaceholder;
+  $("code").placeholder = t.codePlaceholder;
+  $("email-send").textContent = t.send;
+  $("code-verify").textContent = t.verify;
+  show("signin");
+}
+
+$("email-form").onsubmit = async (event) => {
+  event.preventDefault();
+  setError("");
+  // Yalnızca var olan hesap: hesap SmartNotes uygulamasında açılır.
+  const { error } = await supabase.auth.signInWithOtp({ email: $("email").value.trim(), options: { shouldCreateUser: false } });
+  if (error) return setError(t.failed);
+  $("status").textContent = t.codeSent;
+  show("code-form"); $("code").focus();
+};
+
+$("code-form").onsubmit = async (event) => {
+  event.preventDefault();
+  setError("");
+  const { error } = await supabase.auth.verifyOtp({ email: $("email").value.trim(), token: $("code").value.trim(), type: "email" });
+  if (error) return setError(t.failed);
+  show("signin", false);
+  await showConsent();
+};
+
+async function showConsent() {
+  $("status").textContent = "";
+  const { data, error } = await supabase.auth.oauth.getAuthorizationDetails(authorizationId);
+  if (error || !data) return setError(t.failed);
+  // Daha önce izin verilmiş: doğrudan geri dön.
+  if (!("authorization_id" in data)) { $("status").textContent = t.done; location.assign(data.redirect_url); return; }
+  const name = (data.client && data.client.name) || "An app";
+  $("consent-title").textContent = t.wants(name);
+  const list = $("consent-list");
+  list.replaceChildren(...[t.can1, t.can2, t.cannot].map((text) => Object.assign(document.createElement("li"), { textContent: text })));
+  const { data: { user } } = await supabase.auth.getUser();
+  $("consent-account").textContent = t.account((user && (user.email || user.phone)) || "");
+  $("approve").textContent = t.approve;
+  $("deny").textContent = t.deny;
+  $("switch").textContent = t.other;
+  show("consent");
+}
+
+async function decide(approve) {
+  setError("");
+  $("approve").disabled = $("deny").disabled = true;
+  const call = approve ? supabase.auth.oauth.approveAuthorization(authorizationId, { skipBrowserRedirect: true })
+                       : supabase.auth.oauth.denyAuthorization(authorizationId, { skipBrowserRedirect: true });
+  const { data, error } = await call;
+  if (error || !data || !data.redirect_url) {
+    $("approve").disabled = $("deny").disabled = false;
+    return setError(t.failed);
+  }
+  $("status").textContent = t.done;
+  location.assign(data.redirect_url);
+}
+$("approve").onclick = () => decide(true);
+$("deny").onclick = () => decide(false);
+$("switch").onclick = async (event) => { event.preventDefault(); await supabase.auth.signOut(); show("consent", false); showSignIn(); };
+
+(async () => {
+  if (!authorizationId) { $("status").textContent = ""; return setError(t.missing); }
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) await showConsent(); else await showSignIn();
+})();
+</script>
+</body></html>
