@@ -10,14 +10,14 @@
 <nav class="lang"><a href="#en">English</a><a href="#tr">Türkçe</a></nav>
 <section lang="en" id="en">
 <h1>SmartNotes Privacy Policy</h1>
-<p class="muted">Last updated: October 16, 2026</p>
+<p class="muted">Last updated: October 18, 2026</p>
 <p><strong>Data controller:</strong> Bugra Hizal (individual developer) · Contact: <a href="mailto:bugra.hizal@hotmail.com">bugra.hizal@hotmail.com</a></p>
-<p><strong>In short:</strong> Your notes, handwriting, PDFs, recordings and study data stay on your device. Only if you turn on "Claude and ChatGPT Connection" yourself are the names of the notebooks you choose and the text recognized from their pages uploaded to our server; turning it off deletes them. You sign in with an account to use the app; only the details needed to sign in (email or phone number, name, account ID) are stored, and your notes are not uploaded to your account. There is no advertising, analytics or tracking.</p>
+<p><strong>In short:</strong> Your notes, handwriting, PDFs, recordings and study data stay on your device. Only if you turn on "Claude and ChatGPT Connection" yourself are the names of the notebooks you choose and the text recognized from their pages uploaded to our server; turning it off deletes them. If you turn on "Cloud AI" yourself, the messages you write to the AI and the recognized text of the relevant page are passed to Claude (Anthropic) to generate a reply; we do not store this content. You sign in with an account to use the app; only the details needed to sign in (email or phone number, name, account ID) are stored, and your notes are not uploaded to your account. There is no advertising, analytics or tracking.</p>
 <h2>Data we collect</h2>
 <ul>
 <li><strong>Account:</strong> Signing in is required to use the app. Only the details needed to create your account and recognize you (below) are stored.</li>
-<li>SmartNotes has no advertising, analytics or tracking. Your content (notes, handwriting, PDFs, audio, flashcards) is not sent to our servers or to third parties; the only exception is the optional sync you turn on yourself (see "Claude and ChatGPT connection" below).</li>
-<li>The app makes network requests only to sign in, refresh your session, sign out, delete your account and — if you turned it on — to sync and verify Pro.</li>
+<li>SmartNotes has no advertising, analytics or tracking. Your content (notes, handwriting, PDFs, audio, flashcards) is not sent to our servers or to third parties; the exceptions are the optional sync you turn on yourself (see "Claude and ChatGPT connection" below) and Cloud AI (see "Cloud AI" below).</li>
+<li>The app makes network requests only to sign in, refresh your session, sign out, delete your account and — if you turned them on — for sync, Cloud AI and Pro verification.</li>
 </ul>
 <h2>Account</h2>
 <ul>
@@ -40,16 +40,33 @@
 <h2>Claude and ChatGPT connection (optional, off by default)</h2>
 <ul>
 <li><strong>When:</strong> Only if you sign in with a server-connected account, turn on sync in "Account &amp; Subscription → Claude and ChatGPT Connection" and choose notebooks.</li>
-<li><strong>What is uploaded:</strong> the names of the notebooks you choose; page numbers and the lines of text recognized from your handwriting; suggestions left by Claude or ChatGPT and their status (pending, added, rejected). Pen strokes, images, audio recordings, PDF files and notebooks you did not choose are not uploaded.</li>
+<li><strong>What is uploaded:</strong> the names of the notebooks you choose; page numbers and the lines of text recognized from your handwriting; suggestions left by Claude or ChatGPT and their status (pending, added, rejected). Pen strokes, images, audio recordings, PDF files, notebooks you did not choose and locked notebooks are not uploaded (locking a notebook deletes its cloud copy).</li>
 <li><strong>Pro verification:</strong> While sync is on, the App Store transaction records on your device (signed by Apple; they contain the product, dates and transaction number, not payment details) are sent to the server to verify that you may leave suggestions on pages. The server stores only the Pro status, product, expiry date and original transaction number.</li>
 <li><strong>Where:</strong> On Supabase servers (region: Frankfurt, Germany (EU)), over an encrypted connection; the data is linked to your account and, through row-level security, can be read only with your session.</li>
 <li><strong>Claude and ChatGPT:</strong> You set up the connection in Claude or ChatGPT yourself and grant access with your SmartNotes account. The AI you authorize can read and search the synced text and leave suggestions on your pages; it cannot change your page, suggestions are added only when you tap "Add to Page", and they are still checked by the on-device math engine. Text sent to these services is governed by Anthropic's and OpenAI's own privacy policies.</li>
 <li><strong>Deletion:</strong> Turning sync off immediately deletes the cloud copy (notebook names, page text, pending suggestions); removing a notebook from the selection deletes that notebook's copy. "Delete Account" deletes all of this and the Pro verification record as well. You can revoke the access you granted to Claude or ChatGPT in their settings.</li>
 </ul>
+<h2>Cloud AI (Claude; optional, off by default)</h2>
+<ul>
+<li><strong>When:</strong> Only if you sign in with a server account and confirm "Account &amp; Subscription → AI → Cloud AI (Claude)" or "Turn On Cloud AI" in AI Chat. You can turn it off anytime in the same place.</li>
+<li><strong>What is sent:</strong> in AI Chat, the messages you write, the earlier messages of that chat and the text recognized from the open page's handwriting; in AI Pencil, the text you selected; in Analysis and Study, the page's recognized text and the question you ask in Analysis. Pen strokes, images, audio recordings and PDF files are not sent. Content of locked notebooks is never sent.</li>
+<li><strong>Where:</strong> The request travels over an encrypted connection through our server (Supabase, Frankfurt, Germany (EU)) to Anthropic's Claude API, and the reply comes back to you. Anthropic processes API data on our behalf under its own <a href="https://www.anthropic.com/legal/privacy">commercial terms and privacy policy</a>.</li>
+<li><strong>What we keep:</strong> We do not store or log the content (messages, note text, replies). To limit abuse and cost, we keep only this record linked to your account: time of the request, feature (chat, pencil, analysis, study), model used, token counts and estimated cost. It is deleted when you delete your account.</li>
+<li><strong>Limits:</strong> The number of requests per day depends on your plan; when the limit is reached or you're offline, AI keeps working with the on-device model.</li>
+<li><strong>AI replies:</strong> They are suggestions. Nothing is written on your page until you tap "Add to Page".</li>
+</ul>
 <h2>On-device processing</h2>
-<p>Handwriting recognition, live math, AI features (AI Pencil, Note Assistant, analysis, summaries, flashcards, "Ask Your Notes") and image generation use Apple frameworks that run on your device (Vision, Apple Intelligence on-device models, Image Playground). Your content is not sent to us for these features. Apple's own processing is governed by <a href="https://www.apple.com/legal/privacy/">Apple's Privacy Policy</a>.</p>
+<p>Handwriting recognition, live math, AI features (AI Pencil, AI Chat, analysis, summaries, flashcards, "Ask Your Notes") and image generation use Apple frameworks that run on your device when Cloud AI is off (Vision, Apple Intelligence on-device models, Image Playground). In that case your content is not sent to us. Apple's own processing is governed by <a href="https://www.apple.com/legal/privacy/">Apple's Privacy Policy</a>.</p>
+<h2>Diagnostic reports</h2>
+<p>If the app crashes or slows down, iOS provides a measurement report at most once a day (Apple MetricKit: crash type, call stack, launch time, memory and battery metrics). SmartNotes keeps these reports only on your device (up to 30) and never sends them anywhere. They contain no notes, handwriting or account details. Only you can choose to send them to us with "Account &amp; Subscription → Share Diagnostic Reports", and you can delete them with "Delete Reports".</p>
+<h2>Calendar</h2>
+<p>"Add to Calendar" finds dated lines on your page on the device (e.g. "Friday 3 pm meeting") and suggests them in the system's "Add Event" screen. iOS adds the event only if you confirm it. SmartNotes does not read your calendar and does not send calendar information anywhere.</p>
 <h2>Microphone</h2>
 <p>The microphone is used only when you start an audio recording, to sync lecture or meeting audio with your notes. Recordings are saved only on your device and can be deleted at any time.</p>
+<h2>Translation</h2>
+<p>"Translate Selected Text" and "Translate" on a text box open Apple's system translation; only you start it. Depending on your settings, Apple translates the text on your device or sends it to Apple for processing (iOS tells you the first time; you can choose on-device translation in Settings). SmartNotes does not send the translated text to us. Apple's processing is subject to the <a href="https://www.apple.com/legal/privacy/">Apple Privacy Policy</a>.</p>
+<h2>Notebook lock</h2>
+<p>A notebook you lock opens with Face ID, Touch ID or your device passcode. iOS performs the check; no face, fingerprint or passcode data reaches the app. The lock and the encryption key of locked notebooks stay on your device only.</p>
 <h2>Photos</h2>
 <p>When you add an image, you choose it in the system photo picker; the app only receives the image you selected and stores a copy inside your page. If you save an exported page to Photos, only "add" permission is requested; the app does not read your photo library.</p>
 <h2>Purchases and payment</h2>
@@ -65,14 +82,14 @@
 </section>
 <section lang="tr" id="tr">
 <h1>SmartNotes Gizlilik Politikası</h1>
-<p class="muted">Son güncelleme: 16 Ekim 2026</p>
+<p class="muted">Son güncelleme: 18 Ekim 2026</p>
 <p><strong>Veri sorumlusu:</strong> Bugra Hizal (bireysel geliştirici) · İletişim: <a href="mailto:bugra.hizal@hotmail.com">bugra.hizal@hotmail.com</a></p>
-<p><strong>Kısaca:</strong> Notların, el yazın, PDF'lerin, ses kayıtların ve çalışma verilerin cihazında kalır. Yalnızca "Claude ve ChatGPT Bağlantısı"nı kendin açarsan, seçtiğin defterlerin adı ve sayfalarından tanınmış metin sunucumuza yüklenir; kapatınca silinir. Uygulamayı kullanmak için hesapla giriş yaparsın; yalnızca giriş için gereken bilgiler (e-posta veya telefon, ad, hesap kimliği) saklanır, notların hesaba yüklenmez. Reklam, analitik veya izleme yoktur.</p>
+<p><strong>Kısaca:</strong> Notların, el yazın, PDF'lerin, ses kayıtların ve çalışma verilerin cihazında kalır. Yalnızca "Claude ve ChatGPT Bağlantısı"nı kendin açarsan, seçtiğin defterlerin adı ve sayfalarından tanınmış metin sunucumuza yüklenir; kapatınca silinir. "Bulut AI"yı kendin açarsan, AI'ya yazdığın mesaj ve ilgili sayfanın tanınmış metni yanıt üretmek için Claude'a (Anthropic) iletilir; biz bu içeriği saklamayız. Uygulamayı kullanmak için hesapla giriş yaparsın; yalnızca giriş için gereken bilgiler (e-posta veya telefon, ad, hesap kimliği) saklanır, notların hesaba yüklenmez. Reklam, analitik veya izleme yoktur.</p>
 <h2>Topladığımız veriler</h2>
 <ul>
 <li><strong>Hesap:</strong> Uygulamayı kullanmak için giriş gerekir. Yalnızca hesabını oluşturmak ve seni tanımak için gereken bilgiler (aşağıda) saklanır.</li>
-<li>SmartNotes'ta reklam, analitik veya izleme yoktur. İçeriğin (notlar, el yazısı, PDF, ses, kartlar) sunucularımıza ya da üçüncü taraflara gönderilmez; tek istisna, kendin açtığın isteğe bağlı eşitlemedir (aşağıda "Claude ve ChatGPT bağlantısı").</li>
-<li>Uygulama yalnızca giriş, oturum yenileme, çıkış, hesap silme ve — açtıysan — eşitleme ile Pro doğrulaması için ağ isteği yapar.</li>
+<li>SmartNotes'ta reklam, analitik veya izleme yoktur. İçeriğin (notlar, el yazısı, PDF, ses, kartlar) sunucularımıza ya da üçüncü taraflara gönderilmez; istisnalar, kendin açtığın isteğe bağlı eşitleme (aşağıda "Claude ve ChatGPT bağlantısı") ve bulut AI'dır (aşağıda "Bulut AI").</li>
+<li>Uygulama yalnızca giriş, oturum yenileme, çıkış, hesap silme ve — açtıysan — eşitleme, bulut AI ve Pro doğrulaması için ağ isteği yapar.</li>
 </ul>
 <h2>Hesap</h2>
 <ul>
@@ -95,16 +112,33 @@
 <h2>Claude ve ChatGPT bağlantısı (isteğe bağlı, varsayılan kapalı)</h2>
 <ul>
 <li><strong>Ne zaman:</strong> Yalnızca sunucuya bağlı bir hesapla giriş yapıp "Hesap ve Abonelik → Claude ve ChatGPT Bağlantısı"nda eşitlemeyi açarsan ve defter seçersen.</li>
-<li><strong>Yüklenenler:</strong> seçtiğin defterlerin adı; sayfaların numarası ve el yazısından tanınmış metin satırları; Claude veya ChatGPT'nin bıraktığı öneriler ve onların durumu (bekliyor, eklendi, reddedildi). Kalem çizgileri, görseller, ses kayıtları, PDF dosyaları ve seçmediğin defterler yüklenmez.</li>
+<li><strong>Yüklenenler:</strong> seçtiğin defterlerin adı; sayfaların numarası ve el yazısından tanınmış metin satırları; Claude veya ChatGPT'nin bıraktığı öneriler ve onların durumu (bekliyor, eklendi, reddedildi). Kalem çizgileri, görseller, ses kayıtları, PDF dosyaları, seçmediğin defterler ve kilitli defterler yüklenmez (bir defteri kilitleyince buluttaki kopyası silinir).</li>
 <li><strong>Pro doğrulaması:</strong> Eşitleme açıkken, sayfalara öneri bırakma iznini sunucuda doğrulamak için cihazındaki App Store işlem kayıtları (Apple imzalı; ürün, tarih ve işlem numarası içerir, ödeme bilgisi içermez) sunucuya gönderilir. Sunucu yalnızca Pro durumunu, ürünü, bitiş tarihini ve ilk işlem numarasını saklar.</li>
 <li><strong>Nerede:</strong> Supabase sunucularında (bölge: Frankfurt, Almanya (AB)), şifreli bağlantıyla; veriler hesabına bağlıdır ve satır düzeyinde güvenlikle yalnızca senin oturumunla okunabilir.</li>
 <li><strong>Claude ve ChatGPT:</strong> Bağlantıyı Claude'da veya ChatGPT'de kendin kurar ve SmartNotes hesabınla izin verirsin. İzin verdiğin yapay zekâ, eşitlenen metinleri okuyabilir, arayabilir ve sayfalarına öneri bırakabilir; sayfanı değiştiremez, öneriler sen "Sayfaya Ekle" demeden eklenmez ve cihazında yine matematik denetiminden geçer. Bu hizmetlere gönderilen metinler Anthropic'in ve OpenAI'ın kendi gizlilik politikalarına tabidir.</li>
 <li><strong>Silme:</strong> Eşitlemeyi kapatınca buluttaki kopya (defter adları, sayfa metinleri, bekleyen öneriler) hemen silinir; bir defteri seçimden çıkarınca o defterin kopyası silinir. "Hesabı Sil" bunların hepsini ve Pro doğrulama kaydını da siler. Claude veya ChatGPT'ye verdiğin izni onların ayarlarından kaldırabilirsin.</li>
 </ul>
+<h2>Bulut AI (Claude; isteğe bağlı, varsayılan kapalı)</h2>
+<ul>
+<li><strong>Ne zaman:</strong> Yalnızca sunucuya bağlı bir hesapla giriş yapıp "Hesap ve Abonelik → AI → Bulut AI (Claude)"yi ya da AI Sohbet'teki "Bulut AI'yı Aç"ı onaylarsan. İstediğin zaman aynı yerden kapatabilirsin.</li>
+<li><strong>Gönderilenler:</strong> AI Sohbet'te yazdığın mesajlar, sohbetin önceki mesajları ve açık sayfanın el yazısından tanınmış metni; AI Kalem'de seçtiğin metin; Analiz ve Çalışma'da sayfanın tanınmış metni ve analizde sorduğun soru. Kalem çizgileri, görseller, ses kayıtları ve PDF dosyaları gönderilmez. Kilitli defterlerin içeriği hiçbir zaman gönderilmez.</li>
+<li><strong>Nereye:</strong> İstek, şifreli bağlantıyla sunucumuz (Supabase, Frankfurt, Almanya (AB)) üzerinden Anthropic'in Claude API'sine iletilir ve yanıt sana döner. Anthropic, API verisini kendi <a href="https://www.anthropic.com/legal/privacy">ticari koşulları ve gizlilik politikası</a> kapsamında, bizim adımıza işler.</li>
+<li><strong>Sakladıklarımız:</strong> İçeriği (mesaj, not metni, yanıt) saklamayız ve günlüğe yazmayız. Kötüye kullanımı ve maliyeti sınırlamak için hesabına bağlı yalnızca şu kayıt tutulur: istek zamanı, özellik türü (sohbet, kalem, analiz, çalışma), kullanılan model, token sayıları ve tahmini maliyet. Bu kayıt hesabını silince silinir.</li>
+<li><strong>Sınırlar:</strong> Günlük istek sayısı plana göre sınırlıdır; sınır dolunca ya da bağlantı yoksa AI cihazındaki modelle çalışmaya devam eder.</li>
+<li><strong>AI yanıtları:</strong> Öneridir. Sayfana bir şey, sen "Sayfaya Ekle" demeden yazılmaz.</li>
+</ul>
 <h2>Cihazda işleme</h2>
-<p>El yazısı tanıma, canlı matematik, yapay zekâ özellikleri (AI Kalem, Not Asistanı, analiz, özetler, bilgi kartları, "Notlarına Sor") ve görsel üretimi, cihazında çalışan Apple çerçevelerini kullanır (Vision, Apple Intelligence cihaz üstü modelleri, Image Playground). Bu özellikler için içeriğin bize gönderilmez. Apple'ın kendi işlemleri <a href="https://www.apple.com/tr/legal/privacy/">Apple Gizlilik Politikası</a>'na tabidir.</p>
+<p>El yazısı tanıma, canlı matematik, yapay zekâ özellikleri (AI Kalem, AI Sohbet, analiz, özetler, bilgi kartları, "Notlarına Sor") ve görsel üretimi, bulut AI kapalıyken cihazında çalışan Apple çerçevelerini kullanır (Vision, Apple Intelligence cihaz üstü modelleri, Image Playground). Bu durumda içeriğin bize gönderilmez. Apple'ın kendi işlemleri <a href="https://www.apple.com/tr/legal/privacy/">Apple Gizlilik Politikası</a>'na tabidir.</p>
+<h2>Tanılama raporları</h2>
+<p>iOS, uygulama çökerse veya yavaşlarsa günde en fazla bir kez ölçüm raporu verir (Apple MetricKit: çökme türü, çağrı yığını, açılış süresi, bellek ve pil ölçümleri). SmartNotes bu raporları yalnızca cihazında saklar (en fazla 30 rapor) ve hiçbir yere göndermez. Raporlarda notların, el yazın veya hesap bilgilerin yoktur. "Hesap ve Abonelik → Tanılama Raporlarını Paylaş" ile bize göndermeyi yalnızca sen seçebilir, "Raporları Sil" ile silebilirsin.</p>
+<h2>Takvim</h2>
+<p>"Takvime Ekle", sayfandaki tarihli satırları (ör. "Cuma 15.00 toplantı") cihazda bulur ve sistemin "Etkinlik Ekle" ekranında önerir. Etkinliği sen onaylarsan iOS takvimine ekler. SmartNotes takvimini okumaz ve takvim bilgisini hiçbir yere göndermez.</p>
 <h2>Mikrofon</h2>
 <p>Mikrofon yalnızca ses kaydı başlattığında, ders veya toplantı sesini notlarınla eşzamanlamak için kullanılır. Kayıtlar yalnızca cihazında saklanır ve istediğin zaman silinebilir.</p>
+<h2>Çeviri</h2>
+<p>"Seçili Metni Çevir" ve metin kutusundaki "Çevir", Apple'ın sistem çevirisini açar; çeviriyi yalnızca sen başlatırsın. Apple, ayarına göre metni cihazında çevirir ya da işlemek için Apple'a gönderir (ilk kullanımda iOS bunu bildirir; cihazda çeviriyi Ayarlar'dan seçebilirsin). SmartNotes çevrilen metni bize göndermez. Apple'ın işlemleri <a href="https://www.apple.com/tr/legal/privacy/">Apple Gizlilik Politikası</a>'na tabidir.</p>
+<h2>Defter kilidi</h2>
+<p>Kilitlediğin defter Face ID, Touch ID veya cihaz parolasıyla açılır. Doğrulamayı iOS yapar; yüz, parmak izi veya parola bilgisi uygulamaya gelmez. Kilit bilgisi ve kilitli defterlerin şifreleme anahtarı yalnızca cihazındadır.</p>
 <h2>Fotoğraflar</h2>
 <p>Görsel eklerken sistemin fotoğraf seçicisinde seçimi sen yaparsın; uygulama yalnızca seçtiğin görseli alır ve sayfanın içinde bir kopyasını saklar. Dışa aktardığın bir sayfayı Fotoğraflar'a kaydedersen yalnızca "ekleme" izni istenir; uygulama fotoğraf arşivini okumaz.</p>
 <h2>Satın almalar ve ödeme</h2>

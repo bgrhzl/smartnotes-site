@@ -24,8 +24,12 @@
   <p id="signin-intro"></p>
   <div class="actions" id="providers"></div>
   <form id="email-form" hidden>
-    <p><input id="email" type="email" autocomplete="email" required></p>
-    <div class="actions"><button class="primary" type="submit" id="email-send"></button></div>
+    <p><input id="email" type="email" autocomplete="username" required></p>
+    <p><input id="password" type="password" autocomplete="current-password"></p>
+    <div class="actions">
+      <button class="primary" type="submit" id="password-signin"></button>
+      <button class="secondary" type="button" id="email-send"></button>
+    </div>
   </form>
   <form id="code-form" hidden>
     <p><input id="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required></p>
@@ -60,8 +64,9 @@ const tr = (navigator.language || "en").toLowerCase().startsWith("tr");
 const t = tr ? {
   loading: "Yükleniyor…", missing: "Bu sayfa bir bağlantı isteğiyle açılmalı (Claude veya ChatGPT'den).",
   signin: "Devam etmek için SmartNotes hesabınla giriş yap (uygulamada kullandığın hesap).",
-  google: "Google ile devam et", email: "E-posta ile devam et", send: "Kod gönder", verify: "Giriş yap",
+  google: "Google ile devam et", email: "E-posta ile devam et", send: "Parolasız: kod gönder", verify: "Giriş yap",
   emailPlaceholder: "E-posta adresin", codePlaceholder: "6 haneli kod", codeSent: "E-postana 6 haneli bir kod gönderdik.",
+  passwordPlaceholder: "Parola", passwordSignIn: "Parolayla giriş yap", wrongPassword: "E-posta veya parola hatalı.",
   noMethods: "Şu anda web girişi açık değil. SmartNotes destek sayfasından bize yaz.",
   wants: (name) => `${name}, SmartNotes hesabına bağlanmak istiyor. İzin verirsen:`,
   can1: "Uygulamada eşitlemeyi açtığın defterlerin adlarını ve sayfa metinlerini okuyabilir.",
@@ -72,8 +77,9 @@ const t = tr ? {
 } : {
   loading: "Loading…", missing: "Open this page from a connection request (Claude or ChatGPT).",
   signin: "Sign in with your SmartNotes account (the one you use in the app) to continue.",
-  google: "Continue with Google", email: "Continue with email", send: "Send code", verify: "Sign in",
+  google: "Continue with Google", email: "Continue with email", send: "No password: send a code", verify: "Sign in",
   emailPlaceholder: "Your email address", codePlaceholder: "6-digit code", codeSent: "We sent a 6-digit code to your email.",
+  passwordPlaceholder: "Password", passwordSignIn: "Sign in with password", wrongPassword: "Wrong email or password.",
   noMethods: "Web sign-in is not available right now. Contact us through the SmartNotes support page.",
   wants: (name) => `${name} wants to connect to your SmartNotes account. If you allow it, it can:`,
   can1: "Read the titles and page text of the notebooks you chose to sync in the app.",
@@ -119,15 +125,29 @@ async function showSignIn() {
   }
   if (!providers.google && !providers.email) setError(t.noMethods);
   $("email").placeholder = t.emailPlaceholder;
+  $("password").placeholder = t.passwordPlaceholder;
+  $("password-signin").textContent = t.passwordSignIn;
   $("code").placeholder = t.codePlaceholder;
   $("email-send").textContent = t.send;
   $("code-verify").textContent = t.verify;
   show("signin");
 }
 
+// Parolalı hesap (ör. test / App Review hesabı): e-posta kodu özel SMTP gerektirdiği için parola birincil yoldur.
 $("email-form").onsubmit = async (event) => {
   event.preventDefault();
   setError("");
+  const password = $("password").value;
+  if (!password) { $("password").focus(); return; }
+  const { error } = await supabase.auth.signInWithPassword({ email: $("email").value.trim(), password });
+  if (error) return setError(t.wrongPassword);
+  show("signin", false);
+  await showConsent();
+};
+
+$("email-send").onclick = async () => {
+  setError("");
+  if (!$("email").reportValidity()) return;
   // Yalnızca var olan hesap: hesap SmartNotes uygulamasında açılır.
   const { error } = await supabase.auth.signInWithOtp({ email: $("email").value.trim(), options: { shouldCreateUser: false } });
   if (error) return setError(t.failed);
